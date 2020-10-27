@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 //  secretWord
 //  usedLetters
 @Component
-@Profile( "testing" )
+@Profile( "servicetesting" )
 public class InMemHangmanDao implements HangmanDao {
 
     List<HangmanGame> allGames = new ArrayList<>();
