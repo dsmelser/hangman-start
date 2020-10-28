@@ -53,7 +53,12 @@ public class HangmanService {
 
         HangmanGame game = dao.getGameById( gameId );
 
+
         if( game == null ) throw new InvalidIdException( "Could not find game with id = " + gameId );
+
+        List<String> guessedLetters = dao.getLettersForGame( gameId );
+
+        game.setGuessedLetters( guessedLetters );
 
         return convertGame( game );
     }

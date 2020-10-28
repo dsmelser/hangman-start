@@ -26,6 +26,13 @@ public class InMemHangmanDao implements HangmanDao {
     List<String> possibleWords = new ArrayList<>();
 
     public InMemHangmanDao(){
+        reset();
+    }
+
+    @Override
+    public void reset() {
+        possibleWords.clear();
+        allGames.clear();
 
         possibleWords.add("cat");
         possibleWords.add("island");
@@ -59,7 +66,12 @@ public class InMemHangmanDao implements HangmanDao {
         hard.setRemainingGuesses(1);
 
         allGames.add( hard );
+    }
 
+    @Override
+    public List<String> getLettersForGame(Integer gameId) {
+        //TODO: actually implement and test
+        return new ArrayList<>();
     }
 
     @Override
@@ -86,4 +98,6 @@ public class InMemHangmanDao implements HangmanDao {
         if( toCopy != null ) return new HangmanGame(toCopy);
         return null;
     }
+
+
 }

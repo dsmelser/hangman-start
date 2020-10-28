@@ -1,5 +1,6 @@
 package com.talentpath.hangman.controllers;
 
+import com.talentpath.hangman.exceptions.InvalidIdException;
 import com.talentpath.hangman.models.HangmanBoard;
 import com.talentpath.hangman.models.HangmanGuess;
 import com.talentpath.hangman.services.HangmanService;
@@ -40,7 +41,11 @@ public class HangmanController {
 
     @GetMapping("/gamestate/{gameId}")
     public HangmanBoard getGame(@PathVariable Integer gameId){
-        throw new UnsupportedOperationException();
+        try {
+            return service.getGameById( gameId );
+        } catch (InvalidIdException e) {
+            return null;
+        }
     }
 
     @GetMapping("/cheat/{gameId}")

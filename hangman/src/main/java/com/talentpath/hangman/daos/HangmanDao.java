@@ -12,4 +12,8 @@ public interface HangmanDao {
     HangmanGame addGame(HangmanGame toAdd);
 
     HangmanGame getGameById(Integer gameId);
+
+    void reset();
+
+    List<String> getLettersForGame(Integer gameId);
 }

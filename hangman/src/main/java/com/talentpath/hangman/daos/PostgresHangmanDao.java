@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -34,25 +35,72 @@ public class PostgresHangmanDao implements HangmanDao {
 
     @Override
     public HangmanGame addGame(HangmanGame toAdd) {
-        throw new UnsupportedOperationException();
+
+        List<Integer> insertedIds = template.query(
+                "INSERT INTO \"Games\" (\"secretWord\", \"totalGuesses\", \"remainingGuesses\") " +
+                "VALUES ('"+toAdd.getSecretWord()+"', '"+toAdd.getTotalGuesses()+"', '"+toAdd.getRemainingGuesses()+"') returning \"gameId\";", new IdMapper() );
+
+
+
+
+        toAdd.setGameId( insertedIds.get(0));
+
+        return toAdd;
     }
 
     @Override
     public HangmanGame getGameById(Integer gameId) {
-        throw new UnsupportedOperationException();
+
+        HangmanGame retrievedGame = template.queryForObject( "SELECT * FROM \"Games\" WHERE \"gameId\" = '"+gameId+"'",
+                new GameMapper());
+        return retrievedGame;
     }
 
-    //only used for unit testing
-    public void resetAllTables(){
-        template.update("DELETE FROM \"PossibleWords\"");
+    @Override
+    public List<String> getLettersForGame(Integer gameId) {
+        //TODO: actually implement and test
+        return new ArrayList<>();
+    }
+
+
+    @Override
+    public void reset() {
+        template.update("TRUNCATE \"PossibleWords\", \"LettersGuessed\", \"Games\"  RESTART IDENTITY");
+
+        //template.update("DELETE FROM \"PossibleWords\"");
         template.update( "INSERT INTO \"PossibleWords\" (\"word\") VALUES ('zebra'),('giraffe')");
     }
+
 
     class WordMapper implements RowMapper<String> {
 
         @Override
         public String mapRow(ResultSet resultSet, int rowNumber) throws SQLException {
             return resultSet.getString("word");
+        }
+    }
+
+    class IdMapper implements  RowMapper<Integer> {
+
+        @Override
+        public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
+            return resultSet.getInt("gameId");
+        }
+    }
+
+    class GameMapper implements  RowMapper<HangmanGame> {
+
+        @Override
+        public HangmanGame mapRow(ResultSet resultSet, int i) throws SQLException {
+            HangmanGame toReturn = new HangmanGame();
+            toReturn.setSecretWord( resultSet.getString("secretWord") );
+            toReturn.setTotalGuesses( resultSet.getInt( "totalGuesses" ));
+            toReturn.setRemainingGuesses( resultSet.getInt( "remainingGuesses"));
+            //can't do this in here
+            //toReturn.setGuessedLetters();
+            toReturn.setGameId( resultSet.getInt("gameId"));
+
+            return toReturn;
         }
     }
 

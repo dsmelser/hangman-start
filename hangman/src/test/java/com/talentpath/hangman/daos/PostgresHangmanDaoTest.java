@@ -1,5 +1,6 @@
 package com.talentpath.hangman.daos;
 
+import com.talentpath.hangman.models.HangmanGame;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,10 +24,7 @@ class PostgresHangmanDaoTest {
 
     @BeforeEach
     void setUp() {
-
-        //String sql = "DELETE FROM \"Words\"";
-        daoToTest.resetAllTables();
-
+        daoToTest.reset();
     }
 
     @Test
@@ -49,7 +48,30 @@ class PostgresHangmanDaoTest {
     }
 
     @Test
-    void addGame() {
+    void addGameAndGetById() {
+        //Arrange
+        HangmanGame toAdd = new HangmanGame();
+        toAdd.setGuessedLetters(new ArrayList<>());
+        toAdd.setTotalGuesses(0);
+        toAdd.setRemainingGuesses(5);
+        toAdd.setSecretWord("xyz");
+
+        //Act
+           HangmanGame returnedGame = daoToTest.addGame(toAdd);
+
+        //Assert
+        assertEquals( 1, returnedGame.getGameId() );
+        assertEquals( 0, returnedGame.getTotalGuesses());
+        assertEquals( "xyz", returnedGame.getSecretWord());
+        assertEquals( 5, returnedGame.getRemainingGuesses() );
+        assertEquals( 0, returnedGame.getGuessedLetters().size());
+
+        HangmanGame validationGame = daoToTest.getGameById(returnedGame.getGameId());
+        assertEquals( 1, validationGame.getGameId() );
+        assertEquals( 0, validationGame.getTotalGuesses());
+        assertEquals( "xyz", validationGame.getSecretWord());
+        assertEquals( 5, validationGame.getRemainingGuesses() );
+        assertEquals( 0, validationGame.getGuessedLetters().size());
     }
 
     @Test
