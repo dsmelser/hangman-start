@@ -3,6 +3,7 @@ package com.talentpath.hangman.daos;
 // testing dao
 
 import com.talentpath.hangman.models.HangmanGame;
+import com.talentpath.hangman.models.HangmanGuess;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -68,10 +69,22 @@ public class InMemHangmanDao implements HangmanDao {
         allGames.add( hard );
     }
 
+
     @Override
     public List<String> getLettersForGame(Integer gameId) {
         //TODO: actually implement and test
         return new ArrayList<>();
+    }
+
+    @Override
+    public void addLetterGuess(HangmanGuess userGuess) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void editGame(HangmanGame currentGame) {
+        throw new UnsupportedOperationException();
+
     }
 
     @Override

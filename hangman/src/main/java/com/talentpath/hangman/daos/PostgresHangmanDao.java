@@ -1,8 +1,12 @@
 package com.talentpath.hangman.daos;
 
+import com.talentpath.hangman.exceptions.HangmanDaoException;
+import com.talentpath.hangman.exceptions.InvalidIdException;
 import com.talentpath.hangman.models.HangmanGame;
+import com.talentpath.hangman.models.HangmanGuess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,12 +20,20 @@ import java.util.List;
 @Profile( {"production", "daotesting"} )
 public class PostgresHangmanDao implements HangmanDao {
 
+    //normal JDBC query:
+    //create connection     -- automatic (will use connection info from application.properties)
+    //create statement      -- automatic
+    //execute statement     -- automatic
+    //loop over resultset until we get a false  --automatic
+    //process each row into data   -- we handle this in the template with rowmappers
+
+
     @Autowired
     private JdbcTemplate template;
 
     @Override
     public List<HangmanGame> getAllGames() {
-        throw new UnsupportedOperationException();
+        return template.query( "SELECT * FROM \"Games\"", new GameMapper() );
     }
 
     @Override
@@ -48,27 +60,96 @@ public class PostgresHangmanDao implements HangmanDao {
         return toAdd;
     }
 
-    @Override
-    public HangmanGame getGameById(Integer gameId) {
 
-        HangmanGame retrievedGame = template.queryForObject( "SELECT * FROM \"Games\" WHERE \"gameId\" = '"+gameId+"'",
-                new GameMapper());
-        return retrievedGame;
+//    public HangmanGame addGuess(HangmanGuess toAdd){
+//        int rowsAffected = template.update( "UPDATE Games SET TotalGuesses = ?, RemainingGuesses = ? WHERE gameId = " + toAdd.getGameId() );
+//    }
+
+    @Override
+    public HangmanGame getGameById(Integer gameId) throws InvalidIdException {
+
+
+        //queryForObject
+        //expected result is we'll process exactly one row
+        //if we get zero or >1 this throws an exception
+        try {
+            HangmanGame retrievedGame = template.queryForObject("SELECT * FROM \"Games\" WHERE \"gameId\" = '" + gameId + "'",
+                    new GameMapper());
+            return retrievedGame;
+        } catch (DataAccessException ex){
+            //translate this exception
+            //TODO: split out getting no rows vs the database being broken and having non-unique ids
+            throw new InvalidIdException("Error retrieving game id: " + gameId, ex);
+        }
     }
 
     @Override
     public List<String> getLettersForGame(Integer gameId) {
-        //TODO: actually implement and test
-        return new ArrayList<>();
+
+        return template.query(
+                "SELECT \"letter\" FROM \"LettersGuessed\" WHERE \"gameId\" = '"+gameId+"' ",
+                new LetterMapper());
+    }
+
+    @Override
+    public void addLetterGuess(HangmanGuess userGuess) throws HangmanDaoException {
+        try {
+            int rowsAffected = template.update(
+                    "INSERT INTO \"LettersGuessed\" (\"gameId\", \"letter\") VALUES ('"
+                            + userGuess.getGameId() + "', '"
+                            + userGuess.getGuess() + "')");
+
+            //TODO: add sanity check/thrown exceptions if rowsAffected != 1
+            //0 means the insert just failed probably
+            //>1 means the sky is falling
+        } catch (  DataAccessException ex ){
+            // "translate" the exception by catching the specific
+            // exception type we DONT want the rest of the system
+            // to know about and throwing a more general exception
+            // that doesn't pollute our interface
+
+            throw new HangmanDaoException( "Error while attempting to add a guessed letter: " + ex.getMessage(), ex );
+        }
+    }
+
+    @Override
+    public void editGame(HangmanGame currentGame) throws HangmanDaoException {
+
+        try {
+            int rowsAffected = template.update(
+                    "UPDATE \"Games\" SET \"totalGuesses\" = '"+currentGame.getTotalGuesses()
+                            +"', \"remainingGuesses\" = '"+currentGame.getRemainingGuesses()+"' " +
+                            "WHERE \"gameId\" = '"+currentGame.getGameId()+"';");
+
+            //TODO: add sanity check/thrown exceptions if rowsAffected != 1
+            //0 means the insert just failed probably
+            //>1 means the sky is falling
+        } catch (  DataAccessException ex ){
+            // "translate" the exception by catching the specific
+            // exception type we DONT want the rest of the system
+            // to know about and throwing a more general exception
+            // that doesn't pollute our interface
+
+            throw new HangmanDaoException( "Error while attempting to update game: " + ex.getMessage(), ex );
+        }
+
     }
 
 
     @Override
     public void reset() {
+
         template.update("TRUNCATE \"PossibleWords\", \"LettersGuessed\", \"Games\"  RESTART IDENTITY");
 
         //template.update("DELETE FROM \"PossibleWords\"");
         template.update( "INSERT INTO \"PossibleWords\" (\"word\") VALUES ('zebra'),('giraffe')");
+    }
+
+    class LetterMapper implements  RowMapper<String> {
+        @Override
+        public String mapRow(ResultSet resultSet, int i) throws SQLException {
+            return resultSet.getString( "letter");
+        }
     }
 
 

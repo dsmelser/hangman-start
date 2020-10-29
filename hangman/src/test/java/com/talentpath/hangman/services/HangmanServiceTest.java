@@ -137,4 +137,86 @@ class HangmanServiceTest {
 
         }
     }
+
+    @Test
+    void enterGuess(){
+
+    }
+
+    @Test
+    void enterGuessNullGuessObject(){
+
+    }
+
+    @Test
+    void enterGuessNullId(){
+
+    }
+
+    @Test
+    void enterGuessFakeId(){
+
+    }
+
+    @Test
+    void enterGuessNullGuessLetter(){
+
+    }
+
+    @Test
+    void enterGuessTooLong(){
+
+    }
+
+    @Test
+    void enterGuessTooShort(){
+
+    }
+
+    @Test
+    void enterGuessInvalidCharacters(){
+
+    }
+
+
+    @Test
+    void guessWord(){
+
+    }
+
+    @Test
+    void guessWordNullGuessObject(){
+
+    }
+
+    @Test
+    void guessWordNullGameId(){
+
+    }
+
+    @Test
+    void guessWordFakeGameId(){
+
+
+    }
+
+    @Test
+    void guessWordNullWord(){
+
+    }
+
+    @Test
+    void guessWordTooShort(){
+
+    }
+
+    @Test
+    void guessWordTooLong(){
+
+    }
+
+    @Test
+    void guessWordInvalidCharacters(){
+
+    }
 }

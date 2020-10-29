@@ -1,12 +1,14 @@
 package com.talentpath.hangman.controllers;
 
+import com.talentpath.hangman.exceptions.GameOverException;
+import com.talentpath.hangman.exceptions.HangmanDaoException;
 import com.talentpath.hangman.exceptions.InvalidIdException;
 import com.talentpath.hangman.models.HangmanBoard;
 import com.talentpath.hangman.models.HangmanGuess;
 import com.talentpath.hangman.services.HangmanService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -29,39 +31,34 @@ public class HangmanController {
 
     @PostMapping("/begin")
     public Integer beginGame(){
-
-        Integer gameId = service.beginGame();
-        return gameId;
+        return service.beginGame();
     }
 
     @GetMapping("/games")
     public List<HangmanBoard> getAllGames(){
-        throw new UnsupportedOperationException();
+        return service.getGames();
     }
 
     @GetMapping("/gamestate/{gameId}")
-    public HangmanBoard getGame(@PathVariable Integer gameId){
-        try {
-            return service.getGameById( gameId );
-        } catch (InvalidIdException e) {
-            return null;
-        }
+    public HangmanBoard getGame(@PathVariable Integer gameId) throws InvalidIdException {
+        return service.getGameById(gameId);
     }
 
     @GetMapping("/cheat/{gameId}")
-    public String cheat( @PathVariable Integer gameId ){
-        throw new UnsupportedOperationException();
+    public String cheat( @PathVariable Integer gameId ) throws InvalidIdException {
+        return service.cheat( gameId );
     }
 
     //guessing a letter
     @PutMapping( "/guessletter")
-    public HangmanBoard makeLetterGuess( @RequestBody HangmanGuess userGuess  ){
-        throw new UnsupportedOperationException();
+    public HangmanBoard makeLetterGuess( @RequestBody HangmanGuess userGuess  ) throws InvalidIdException, HangmanDaoException{
+            return service.enterGuess(userGuess);
+
     }
 
     @PutMapping( "/guessword" )
-    public HangmanBoard makeWordGuess( @RequestBody HangmanGuess userGuess ){
-        throw new UnsupportedOperationException();
+    public HangmanBoard makeWordGuess( @RequestBody HangmanGuess userGuess ) throws InvalidIdException, HangmanDaoException, GameOverException {
+        return service.guessWord( userGuess );
     }
 
 }
