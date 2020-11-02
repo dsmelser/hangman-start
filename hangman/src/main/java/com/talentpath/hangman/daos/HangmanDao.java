@@ -2,6 +2,7 @@ package com.talentpath.hangman.daos;
 
 import com.talentpath.hangman.exceptions.HangmanDaoException;
 import com.talentpath.hangman.exceptions.InvalidIdException;
+import com.talentpath.hangman.exceptions.NullArgumentException;
 import com.talentpath.hangman.models.HangmanGame;
 import com.talentpath.hangman.models.HangmanGuess;
 
@@ -12,7 +13,7 @@ public interface HangmanDao {
 
     List<String> getAllWords();
 
-    HangmanGame addGame(HangmanGame toAdd);
+    HangmanGame addGame(HangmanGame toAdd) throws NullArgumentException;
 
     HangmanGame getGameById(Integer gameId) throws InvalidIdException;
 

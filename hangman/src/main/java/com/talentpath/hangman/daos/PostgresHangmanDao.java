@@ -2,6 +2,7 @@ package com.talentpath.hangman.daos;
 
 import com.talentpath.hangman.exceptions.HangmanDaoException;
 import com.talentpath.hangman.exceptions.InvalidIdException;
+import com.talentpath.hangman.exceptions.NullArgumentException;
 import com.talentpath.hangman.models.HangmanGame;
 import com.talentpath.hangman.models.HangmanGuess;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class PostgresHangmanDao implements HangmanDao {
     }
 
     @Override
-    public HangmanGame addGame(HangmanGame toAdd) {
+    public HangmanGame addGame(HangmanGame toAdd) throws NullArgumentException {
 
         List<Integer> insertedIds = template.query(
                 "INSERT INTO \"Games\" (\"secretWord\", \"totalGuesses\", \"remainingGuesses\") " +

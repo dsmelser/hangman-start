@@ -3,6 +3,7 @@ package com.talentpath.hangman.services;
 import com.talentpath.hangman.daos.HangmanDao;
 import com.talentpath.hangman.daos.InMemHangmanDao;
 import com.talentpath.hangman.exceptions.InvalidIdException;
+import com.talentpath.hangman.exceptions.NullArgumentException;
 import com.talentpath.hangman.models.HangmanBoard;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,11 +49,14 @@ class HangmanServiceTest {
         //Arrange
         List<HangmanBoard> gamesBeforeStart = serviceToTest.getGames();
 
-        //Act
-        Integer gameId = serviceToTest.beginGame();
 
         //Assert
         try {
+
+            //Act
+            Integer gameId = serviceToTest.beginGame();
+
+
             HangmanBoard matchingGame = serviceToTest.getGameById(gameId);
             assertEquals( gameId, matchingGame.getGameId() );
 
@@ -60,7 +64,7 @@ class HangmanServiceTest {
 
             assertEquals( gamesBeforeStart.size() + 1, gamesAfterStart.size() );
 
-        } catch ( InvalidIdException ex ){
+        } catch ( InvalidIdException | NullArgumentException ex ){
             fail( "Hit exception during golden path test: " + ex.getMessage());
         }
 

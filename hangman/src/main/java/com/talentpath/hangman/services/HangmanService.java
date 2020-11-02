@@ -5,6 +5,7 @@ import com.talentpath.hangman.daos.InMemHangmanDao;
 import com.talentpath.hangman.exceptions.GameOverException;
 import com.talentpath.hangman.exceptions.HangmanDaoException;
 import com.talentpath.hangman.exceptions.InvalidIdException;
+import com.talentpath.hangman.exceptions.NullArgumentException;
 import com.talentpath.hangman.models.HangmanBoard;
 import com.talentpath.hangman.models.HangmanGame;
 import com.talentpath.hangman.models.HangmanGuess;
@@ -24,7 +25,7 @@ public class HangmanService {
         this.dao = dao;
     }
 
-    public Integer beginGame() {
+    public Integer beginGame() throws NullArgumentException {
         //what are the rules for starting a game of hangman
         //need to pick a random word
         //give 5 guesses by default

@@ -1,12 +1,15 @@
 package com.talentpath.hangman.daos;
 
+import com.talentpath.hangman.exceptions.GameOverException;
 import com.talentpath.hangman.exceptions.HangmanDaoException;
 import com.talentpath.hangman.exceptions.InvalidIdException;
+import com.talentpath.hangman.exceptions.NullArgumentException;
 import com.talentpath.hangman.models.HangmanGame;
 import com.talentpath.hangman.models.HangmanGuess;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.internal.matchers.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -87,16 +90,14 @@ class PostgresHangmanDaoTest {
             assertEquals( 5, returnedGame.getRemainingGuesses() );
             assertEquals( 0, returnedGame.getGuessedLetters().size());
 
-            HangmanGame validationGame = null;
-
-                validationGame = daoToTest.getGameById(returnedGame.getGameId());
+            HangmanGame validationGame = daoToTest.getGameById(returnedGame.getGameId());
 
             assertEquals( 1, validationGame.getGameId() );
             assertEquals( 0, validationGame.getTotalGuesses());
             assertEquals( "xyz", validationGame.getSecretWord());
             assertEquals( 5, validationGame.getRemainingGuesses() );
             assertEquals( 0, validationGame.getGuessedLetters().size());
-        } catch (InvalidIdException e) {
+        } catch (InvalidIdException | NullArgumentException e) {
             fail( "produced invalid id exception during golden path test");
         }
     }
@@ -104,6 +105,21 @@ class PostgresHangmanDaoTest {
     @Test
     void addGameNullGameObject(){
         //test what happens if the entire HangmanGame object is nulll
+        try {
+
+            //Arrange
+            HangmanGame toAdd = null;
+
+            //Act
+            HangmanGame returnedGame = daoToTest.addGame(toAdd);
+            fail( "did not raise exception during addGameNullGameObject()" );
+
+        } catch( NullArgumentException ex ){
+
+            //TODO: in here make sure they didn't add anything to the Games table
+
+        }
+
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.talentpath.hangman.controllers;
 import com.talentpath.hangman.exceptions.GameOverException;
 import com.talentpath.hangman.exceptions.HangmanDaoException;
 import com.talentpath.hangman.exceptions.InvalidIdException;
+import com.talentpath.hangman.exceptions.NullArgumentException;
 import com.talentpath.hangman.models.HangmanBoard;
 import com.talentpath.hangman.models.HangmanGuess;
 import com.talentpath.hangman.services.HangmanService;
@@ -30,7 +31,7 @@ public class HangmanController {
     HangmanService service;
 
     @PostMapping("/begin")
-    public Integer beginGame(){
+    public Integer beginGame() throws NullArgumentException {
         return service.beginGame();
     }
 

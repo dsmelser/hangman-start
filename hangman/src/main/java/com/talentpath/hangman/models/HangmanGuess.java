@@ -15,7 +15,7 @@ public class HangmanGuess {
     }
 
     public String getGuess() {
-        return guess;
+        return guess.toLowerCase();
     }
 
     public void setGuess(String guess) {
